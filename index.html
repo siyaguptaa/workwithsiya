@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Siya Gupta — SiyaOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet"/>
+<style>
+/* ============================================================
+   TOKENS
+============================================================ */
+:root{
+  --pink:#ffd6e8;
+  --pink-deep:#ff9ec6;
+  --peach:#ffe3c2;
+  --lavender:#dcd2ff;
+  --lavender-deep:#b9a8ff;
+  --ink:#3a2e4d;
+  --ink-soft:#6b5b85;
+  --cream:#fff8ef;
+  --paper:#fffdf6;
+  --note-yellow:#fff3a3;
+  --window-bar:#f4ecff;
+  --accent:#ff6fa0;
+  --accent-2:#7ad0c4;
+  --shadow-pix:#2a2138;
+  --border:3px solid var(--ink);
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{
+  font-family:'Press Start 2P',monospace;
+  background:#000;
+  overflow:hidden;
+  image-rendering:pixelated;
+  color:var(--ink);
+  cursor:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28"><g fill="%233a2e4d"><rect x="4" y="2" width="2" height="2"/><rect x="4" y="4" width="2" height="2"/><rect x="6" y="4" width="2" height="2"/><rect x="4" y="6" width="2" height="2"/><rect x="6" y="6" width="2" height="2"/><rect x="8" y="6" width="2" height="2"/><rect x="4" y="8" width="2" height="2"/><rect x="6" y="8" width="2" height="2"/><rect x="8" y="8" width="2" height="2"/><rect x="10" y="8" width="2" height="2"/><rect x="4" y="10" width="2" height="2"/><rect x="6" y="10" width="2" height="2"/><rect x="8" y="10" width="2" height="2"/><rect x="10" y="10" width="2" height="2"/><rect x="12" y="10" width="2" height="2"/><rect x="4" y="12" width="2" height="2"/><rect x="6" y="12" width="2" height="2"/><rect x="8" y="12" width="2" height="2"/><rect x="6" y="14" width="2" height="2"/><rect x="8" y="14" width="2" height="2"/><rect x="10" y="14" width="2" height="2"/><rect x="8" y="16" width="2" height="2"/><rect x="10" y="16" width="2" height="2"/></g><g fill="%23ff6fa0"><rect x="6" y="2" width="2" height="10"/><rect x="8" y="4" width="2" height="2"/></g></svg>') 4 2, auto;
+}
+img{display:block;max-width:100%;image-rendering:pixelated;}
+button{font-family:'Press Start 2P',monospace;cursor:inherit;}
+::selection{background:var(--accent);color:#fff;}
+
+/* pixelated scrollbars */
+::-webkit-scrollbar{width:14px;height:14px;}
+::-webkit-scrollbar-track{background:var(--cream);border-left:3px solid var(--ink);}
+::-webkit-scrollbar-thumb{background:var(--lavender-deep);border:3px solid var(--ink);}
+::-webkit-scrollbar-thumb:hover{background:var(--pink-deep);}
+
+.pixel-border{
+  border:var(--border);
+  box-shadow:4px 4px 0 var(--shadow-pix);
+}
+
+/* ============================================================
+   BOOT SCREEN
+============================================================ */
+#boot{
+  position:fixed;inset:0;z-index:9999;
+  background:#1b1530;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;
+  transition:opacity .6s ease, visibility .6s ease;
+}
+#boot.hide{opacity:0;visibility:hidden;pointer-events:none;}
+.boot-logo{
+  font-size:clamp(18px,4vw,30px);
+  color:#fff3a3;
+  letter-spacing:2px;
+  text-shadow:4px 4px 0 #ff6fa0;
+  animation:bootPulse 1.2s steps(2) infinite;
+}
+@keyframes bootPulse{0%,100%{opacity:1}50%{opacity:.55}}
+.boot-sub{font-size:9px;color:#b9a8ff;letter-spacing:1px;}
+.boot-bar-wrap{width:280px;height:22px;border:3px solid #fff3a3;background:#2a2148;padding:3px;}
+.boot-bar{height:100%;width:0%;background:repeating-linear-gradient(90deg,#ff9ec6 0 8px,#ff6fa0 8px 16px);animation:bootFill 2.6s steps(20) forwards;}
+@keyframes bootFill{to{width:100%;}}
+.boot-pct{font-size:9px;color:#fff;}
+.boot-heart{width:16px;height:16px;display:inline-block;}
+
+/* ============================================================
+   DESKTOP / BACKGROUND
+============================================================ */
+#desktop{
+  position:relative;
+  width:100%;height:100%;
+  overflow:hidden;
+  background:linear-gradient(160deg,var(--pink) 0%, var(--peach) 48%, var(--lavender) 100%);
+}
+
+/* clouds */
+.cloud{
+  position:absolute;
+  background:#fff;
+  opacity:.85;
+  filter:drop-shadow(3px 3px 0 rgba(255,255,255,.5));
+}
+.cloud::before,.cloud::after{content:'';position:absolute;background:#fff;}
+.cloud-1{width:90px;height:28px;top:8%;left:-120px;border-radius:2px;animation:driftRight 38s linear infinite;}
+.cloud-1::before{width:36px;height:36px;top:-18px;left:14px;border-radius:2px;}
+.cloud-1::after{width:26px;height:26px;top:-12px;left:48px;border-radius:2px;}
+.cloud-2{width:60px;height:20px;top:18%;left:-90px;border-radius:2px;animation:driftRight 52s linear infinite;animation-delay:-12s;opacity:.7;}
+.cloud-2::before{width:24px;height:24px;top:-12px;left:8px;}
+.cloud-2::after{width:18px;height:18px;top:-8px;left:32px;}
+.cloud-3{width:110px;height:30px;top:6%;right:-140px;border-radius:2px;animation:driftLeft 46s linear infinite;animation-delay:-6s;}
+.cloud-3::before{width:40px;height:40px;top:-20px;left:18px;}
+.cloud-3::after{width:30px;height:30px;top:-14px;left:58px;}
+.cloud-4{width:50px;height:16px;top:30%;right:-80px;border-radius:2px;animation:driftLeft 60s linear infinite;animation-delay:-20s;opacity:.6;}
+.cloud-4::before{width:20px;height:20px;top:-10px;left:6px;}
+.cloud-4::after{width:14px;height:14px;top:-6px;left:26px;}
+@keyframes driftRight{from{transform:translateX(0)}to{transform:translateX(calc(100vw + 200px))}}
+@keyframes driftLeft{from{transform:translateX(0)}to{transform:translateX(calc(-100vw - 200px))}}
+
+/* ============================================================
+   MENU BAR
+============================================================ */
+#menubar{
+  position:absolute;top:0;left:0;right:0;height:38px;z-index:500;
+  background:var(--cream);
+  border-bottom:3px solid var(--ink);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 14px;
+  font-size:9px;
+}
+.menu-left{display:flex;align-items:center;gap:18px;}
+.menu-logo{width:14px;height:14px;background:var(--accent);border:2px solid var(--ink);display:inline-block;position:relative;}
+.menu-logo::after{content:'';position:absolute;top:3px;left:3px;width:4px;height:4px;background:#fff;}
+.menu-name{letter-spacing:1px;}
+.menu-items{display:flex;gap:16px;color:var(--ink-soft);}
+.menu-items span{cursor:pointer;}
+.menu-items span:hover{color:var(--accent);}
+.menu-right{display:flex;align-items:center;gap:14px;color:var(--ink-soft);}
+#clock{color:var(--ink);}
+@media (max-width:680px){.menu-items{display:none;}}
+
+/* ============================================================
+   STICKY NOTE
+============================================================ */
+#sticky{
+  position:absolute;top:64px;right:36px;width:180px;
+  background:var(--note-yellow);
+  border:3px solid var(--ink);
+  box-shadow:5px 5px 0 var(--shadow-pix);
+  padding:14px 12px 18px;
+  transform:rotate(4deg);
+  font-size:9px;line-height:1.9;
+  z-index:50;
+  animation:noteSway 5s ease-in-out infinite;
+}
+#sticky::before{
+  content:'';position:absolute;top:-10px;left:50%;transform:translateX(-50%);
+  width:16px;height:16px;background:#ff8aa8;border:2px solid var(--ink);border-radius:50%;
+}
+@keyframes noteSway{0%,100%{transform:rotate(4deg)}50%{transform:rotate(2deg)}}
+@media (max-width:680px){#sticky{top:48px;right:10px;width:130px;font-size:8px;}}
+
+/* ============================================================
+   PIXEL GIRL SPRITE
+============================================================ */
+#girl-wrap{
+  position:absolute;
+  bottom:118px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:60;
+  text-align:center;
+  animation:girlBob 2.6s ease-in-out infinite;
+}
+#girl-sprite{
+  width:64px;height:88px;box-shadow:
+  12px 0px 0 #6b4636,
+  16px 0px 0 #6b4636,
+  20px 0px 0 #6b4636,
+  24px 0px 0 #6b4636,
+  28px 0px 0 #6b4636,
+  32px 0px 0 #6b4636,
+  36px 0px 0 #6b4636,
+  40px 0px 0 #6b4636,
+  8px 4px 0 #6b4636,
+  12px 4px 0 #6b4636,
+  16px 4px 0 #6b4636,
+  20px 4px 0 #6b4636,
+  24px 4px 0 #6b4636,
+  28px 4px 0 #6b4636,
+  32px 4px 0 #6b4636,
+  36px 4px 0 #6b4636,
+  40px 4px 0 #6b4636,
+  44px 4px 0 #6b4636,
+  4px 8px 0 #6b4636,
+  8px 8px 0 #6b4636,
+  12px 8px 0 #6b4636,
+  16px 8px 0 #6b4636,
+  20px 8px 0 #6b4636,
+  24px 8px 0 #6b4636,
+  28px 8px 0 #6b4636,
+  32px 8px 0 #6b4636,
+  36px 8px 0 #6b4636,
+  40px 8px 0 #6b4636,
+  44px 8px 0 #6b4636,
+  48px 8px 0 #6b4636,
+  0px 12px 0 #f7c9dd,
+  4px 12px 0 #6b4636,
+  8px 12px 0 #6b4636,
+  12px 12px 0 #6b4636,
+  20px 12px 0 #ffd9b3,
+  24px 12px 0 #ffd9b3,
+  28px 12px 0 #ffd9b3,
+  32px 12px 0 #ffd9b3,
+  40px 12px 0 #6b4636,
+  44px 12px 0 #6b4636,
+  48px 12px 0 #6b4636,
+  52px 12px 0 #f7c9dd,
+  0px 16px 0 #f7c9dd,
+  4px 16px 0 #6b4636,
+  16px 16px 0 #ffd9b3,
+  20px 16px 0 #ffd9b3,
+  24px 16px 0 #ffd9b3,
+  28px 16px 0 #ffd9b3,
+  32px 16px 0 #ffd9b3,
+  36px 16px 0 #ffd9b3,
+  48px 16px 0 #6b4636,
+  52px 16px 0 #f7c9dd,
+  0px 20px 0 #6b4636,
+  12px 20px 0 #ffd9b3,
+  16px 20px 0 #2b2b2b,
+  20px 20px 0 #2b2b2b,
+  24px 20px 0 #ffd9b3,
+  28px 20px 0 #ffd9b3,
+  32px 20px 0 #2b2b2b,
+  36px 20px 0 #2b2b2b,
+  40px 20px 0 #ffd9b3,
+  52px 20px 0 #6b4636,
+  0px 24px 0 #6b4636,
+  12px 24px 0 #ffd9b3,
+  16px 24px 0 #ffd9b3,
+  20px 24px 0 #ffd9b3,
+  24px 24px 0 #ffd9b3,
+  28px 24px 0 #ffd9b3,
+  32px 24px 0 #ffd9b3,
+  36px 24px 0 #ffd9b3,
+  40px 24px 0 #ffd9b3,
+  52px 24px 0 #6b4636,
+  12px 28px 0 #ffd9b3,
+  16px 28px 0 #ffd9b3,
+  20px 28px 0 #ff9eb8,
+  24px 28px 0 #ffd9b3,
+  28px 28px 0 #ffd9b3,
+  32px 28px 0 #ff9eb8,
+  36px 28px 0 #ffd9b3,
+  40px 28px 0 #ffd9b3,
+  12px 32px 0 #ffd9b3,
+  16px 32px 0 #ffd9b3,
+  20px 32px 0 #ffd9b3,
+  24px 32px 0 #ffd9b3,
+  28px 32px 0 #ffd9b3,
+  32px 32px 0 #ffd9b3,
+  36px 32px 0 #ffd9b3,
+  40px 32px 0 #ffd9b3,
+  16px 36px 0 #ffd9b3,
+  20px 36px 0 #ffd9b3,
+  24px 36px 0 #ffd9b3,
+  28px 36px 0 #ffd9b3,
+  32px 36px 0 #ffd9b3,
+  36px 36px 0 #ffd9b3,
+  12px 40px 0 #ff8fb1,
+  16px 40px 0 #ff8fb1,
+  20px 40px 0 #ff8fb1,
+  24px 40px 0 #ff8fb1,
+  28px 40px 0 #ff8fb1,
+  32px 40px 0 #ff8fb1,
+  36px 40px 0 #ff8fb1,
+  40px 40px 0 #ff8fb1,
+  8px 44px 0 #ff8fb1,
+  12px 44px 0 #ff8fb1,
+  16px 44px 0 #ff8fb1,
+  20px 44px 0 #ff8fb1,
+  24px 44px 0 #ff8fb1,
+  28px 44px 0 #ff8fb1,
+  32px 44px 0 #ff8fb1,
+  36px 44px 0 #ff8fb1,
+  40px 44px 0 #ff8fb1,
+  44px 44px 0 #ff8fb1,
+  8px 48px 0 #ff8fb1,
+  12px 48px 0 #ff8fb1,
+  16px 48px 0 #ff8fb1,
+  20px 48px 0 #ff8fb1,
+  24px 48px 0 #ff8fb1,
+  28px 48px 0 #ff8fb1,
+  32px 48px 0 #ff8fb1,
+  36px 48px 0 #ff8fb1,
+  40px 48px 0 #ff8fb1,
+  44px 48px 0 #ff8fb1,
+  4px 52px 0 #ff8fb1,
+  8px 52px 0 #ff8fb1,
+  12px 52px 0 #ff8fb1,
+  16px 52px 0 #ff8fb1,
+  20px 52px 0 #ff8fb1,
+  24px 52px 0 #ff8fb1,
+  28px 52px 0 #ff8fb1,
+  32px 52px 0 #ff8fb1,
+  36px 52px 0 #ff8fb1,
+  40px 52px 0 #ff8fb1,
+  44px 52px 0 #ff8fb1,
+  48px 52px 0 #ff8fb1,
+  4px 56px 0 #ff8fb1,
+  8px 56px 0 #ff8fb1,
+  12px 56px 0 #ff8fb1,
+  16px 56px 0 #ff8fb1,
+  20px 56px 0 #ff8fb1,
+  24px 56px 0 #ff8fb1,
+  28px 56px 0 #ff8fb1,
+  32px 56px 0 #ff8fb1,
+  36px 56px 0 #ff8fb1,
+  40px 56px 0 #ff8fb1,
+  44px 56px 0 #ff8fb1,
+  48px 56px 0 #ff8fb1,
+  4px 60px 0 #ff6fa0,
+  8px 60px 0 #ff8fb1,
+  12px 60px 0 #ff8fb1,
+  16px 60px 0 #ff8fb1,
+  20px 60px 0 #ff8fb1,
+  24px 60px 0 #ff8fb1,
+  28px 60px 0 #ff8fb1,
+  32px 60px 0 #ff8fb1,
+  36px 60px 0 #ff8fb1,
+  40px 60px 0 #ff8fb1,
+  44px 60px 0 #ff6fa0,
+  8px 64px 0 #ff8fb1,
+  12px 64px 0 #ff8fb1,
+  40px 64px 0 #ff8fb1,
+  44px 64px 0 #ff8fb1,
+  8px 68px 0 #ffd9b3,
+  12px 68px 0 #ffd9b3,
+  40px 68px 0 #ffd9b3,
+  44px 68px 0 #ffd9b3,
+  8px 72px 0 #ffd9b3,
+  12px 72px 0 #ffd9b3,
+  40px 72px 0 #ffd9b3,
+  44px 72px 0 #ffd9b3,
+  8px 76px 0 #ff9eb8,
+  12px 76px 0 #ff9eb8,
+  40px 76px 0 #ff9eb8,
+  44px 76px 0 #ff9eb8,
+  8px 80px 0 #ff9eb8,
+  12px 80px 0 #ff9eb8,
+  40px 80px 0 #ff9eb8,
+  44px 80px 0 #ff9eb8,
+  4px 84px 0 #ff9eb8,
+  8px 84px 0 #ff9eb8,
+  12px 84px 0 #ff9eb8,
+  32px 84px 0 #ff9eb8,
+  36px 84px 0 #ff9eb8,
+  40px 84px 0 #ff9eb8;
+  margin:0 auto;
+  position:relative;
+}
+@keyframes girlBob{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-6px)}}
+.girl-speech{
+  position:absolute;top:-46px;left:50%;transform:translateX(-50%);
+  background:#fff;border:2px solid var(--ink);padding:5px 8px;font-size:7px;
+  white-space:nowrap;box-shadow:3px 3px 0 var(--shadow-pix);
+  opacity:0;animation:speechPop 8s ease-in-out infinite;
+}
+@keyframes speechPop{0%,8%{opacity:0;transform:translateX(-50%) translateY(6px)}12%,28%{opacity:1;transform:translateX(-50%) translateY(0)}34%,100%{opacity:0;}}
+
+/* ============================================================
+   DESKTOP ICONS
+============================================================ */
+#icons{
+  position:absolute;top:56px;left:18px;z-index:40;
+  display:grid;
+  grid-template-rows:repeat(5,84px);
+  grid-auto-flow:column;
+  gap:6px;
+}
+.icon{
+  width:78px;height:78px;
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+  gap:6px;padding:6px 2px;
+  cursor:pointer;
+  user-select:none;
+  -webkit-user-select:none;
+}
+.icon-glyph{
+  width:40px;height:40px;
+  background:var(--paper);
+  border:3px solid var(--ink);
+  box-shadow:3px 3px 0 var(--shadow-pix);
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;
+  transition:transform .1s;
+}
+.icon:hover .icon-glyph{transform:translateY(-3px);}
+.icon:active .icon-glyph{transform:translateY(0px);box-shadow:1px 1px 0 var(--shadow-pix);}
+.icon-label{
+  font-size:7px;text-align:center;line-height:1.5;color:var(--ink);
+  background:rgba(255,255,255,.55);
+  padding:2px 3px;
+  max-width:76px;
+}
+.icon.selected .icon-label{background:var(--accent);color:#fff;}
+
+/* trash can */
+#trash{
+  position:absolute;bottom:104px;right:22px;z-index:60;
+  display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;
+}
+#trash .icon-glyph{width:46px;height:46px;font-size:24px;background:#ffeef5;}
+#trash:hover .icon-glyph{transform:translateY(-3px) rotate(-4deg);}
+@media (max-width:680px){#icons{grid-template-rows:repeat(7,76px);}}
+
+/* ============================================================
+   DOCK
+============================================================ */
+#dock{
+  position:absolute;bottom:14px;left:50%;transform:translateX(-50%);
+  z-index:200;
+  display:flex;align-items:flex-end;gap:10px;
+  background:rgba(255,255,255,.55);
+  border:3px solid var(--ink);
+  box-shadow:4px 4px 0 var(--shadow-pix);
+  padding:8px 12px;
+}
+.dock-item{
+  width:42px;height:42px;
+  background:var(--paper);
+  border:2px solid var(--ink);
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;
+  cursor:pointer;
+  transition:transform .15s ease;
+}
+.dock-item:hover{transform:translateY(-8px) scale(1.08);}
+.dock-sep{width:2px;align-self:stretch;background:var(--ink);opacity:.25;margin:0 2px;}
+@media (max-width:680px){.dock-item{width:34px;height:34px;font-size:16px;}#dock{gap:6px;padding:6px 8px;}}
+
+/* ============================================================
+   WINDOWS
+============================================================ */
+.window{
+  position:absolute;
+  min-width:300px;
+  max-width:min(640px,92vw);
+  background:var(--window-bar);
+  border:3px solid var(--ink);
+  box-shadow:6px 6px 0 var(--shadow-pix);
+  z-index:100;
+  display:flex;flex-direction:column;
+  animation:winOpen .18s steps(4) both;
+}
+@keyframes winOpen{from{transform:scale(.85);opacity:0;}to{transform:scale(1);opacity:1;}}
+.window.closing{animation:winClose .15s steps(4) both;}
+@keyframes winClose{to{transform:scale(.85);opacity:0;}}
+.window.maximized{
+  top:46px !important;left:2vw !important;
+  width:96vw !important;max-width:96vw !important;
+  height:calc(100vh - 110px) !important;
+}
+.titlebar{
+  background:linear-gradient(180deg,#ffe8f4,#ffd2ea);
+  border-bottom:3px solid var(--ink);
+  display:flex;align-items:center;gap:8px;
+  padding:8px 10px;
+  cursor:grab;
+  user-select:none;
+}
+.titlebar:active{cursor:grabbing;}
+.tl-btn{width:13px;height:13px;border:2px solid var(--ink);cursor:pointer;flex-shrink:0;}
+.tl-red{background:#ff6b6b;}
+.tl-yellow{background:#ffd866;}
+.tl-green{background:#8ee6a1;}
+.titlebar-title{font-size:9px;flex:1;text-align:center;letter-spacing:.5px;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.window-body{
+  padding:18px 18px 22px;
+  overflow-y:auto;
+  background:var(--paper);
+  font-size:10px;line-height:1.9;
+  color:var(--ink);
+  max-height:60vh;
+}
+.window.maximized .window-body{max-height:none;flex:1;}
+.window-body h2{font-size:13px;margin-bottom:10px;color:var(--ink);line-height:1.6;}
+.window-body h3{font-size:10px;margin:14px 0 6px;color:var(--accent);}
+.window-body p{margin-bottom:12px;}
+.window-body .tagrow{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;}
+.win-tag{font-size:7px;background:var(--lavender);border:2px solid var(--ink);padding:4px 7px;}
+.shot{border:3px solid var(--ink);box-shadow:3px 3px 0 var(--shadow-pix);margin-bottom:12px;overflow:hidden;}
+.shot img{width:100%;height:auto;display:block;}
+.shot-cap{font-size:7px;background:var(--ink);color:#fff;padding:5px 7px;letter-spacing:.5px;}
+.shotgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+@media (max-width:520px){.shotgrid{grid-template-columns:1fr;}}
+.stat-row{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0;}
+.stat-box{flex:1;min-width:90px;background:var(--lavender);border:2px solid var(--ink);padding:10px;text-align:center;}
+.stat-num{font-size:14px;color:var(--accent);}
+.stat-lbl{font-size:6px;margin-top:6px;color:var(--ink-soft);}
+.btn-pixel{
+  display:inline-block;margin-top:8px;
+  background:var(--accent);color:#fff;border:2px solid var(--ink);
+  padding:9px 14px;font-size:8px;cursor:pointer;box-shadow:3px 3px 0 var(--shadow-pix);
+  text-decoration:none;
+}
+.btn-pixel:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--shadow-pix);}
+.skill-cat{margin-bottom:14px;}
+.skill-list{list-style:none;}
+.skill-list li{padding-left:14px;position:relative;margin-bottom:6px;font-size:9px;}
+.skill-list li::before{content:'▸';position:absolute;left:0;color:var(--accent);}
+.contact-row{display:flex;align-items:center;gap:10px;margin-bottom:14px;font-size:9px;}
+.contact-row span.lbl{color:var(--ink-soft);min-width:50px;display:inline-block;}
+.exp-item{border-left:3px solid var(--lavender-deep);padding-left:12px;margin-bottom:16px;}
+.exp-role{font-size:9px;color:var(--ink);margin-bottom:3px;}
+.exp-meta{font-size:7px;color:var(--accent);margin-bottom:6px;}
+</style>
+</head>
+<body>
+
+<!-- ============ BOOT SCREEN ============ -->
+<div id="boot">
+  <div class="boot-logo">♥ SIYA OS ♥</div>
+  <div class="boot-sub">booting creative engine...</div>
+  <div class="boot-bar-wrap"><div class="boot-bar"></div></div>
+  <div class="boot-pct" id="bootPct">loading assets 0%</div>
+</div>
+
+<!-- ============ DESKTOP ============ -->
+<div id="desktop">
+
+  <div class="cloud cloud-1"></div>
+  <div class="cloud cloud-2"></div>
+  <div class="cloud cloud-3"></div>
+  <div class="cloud cloud-4"></div>
+
+  <div id="menubar">
+    <div class="menu-left">
+      <span class="menu-logo"></span>
+      <span class="menu-name">Siya Gupta</span>
+      <div class="menu-items">
+        <span data-open="about">About</span>
+        <span data-open="resume">Resume</span>
+        <span data-open="skills">Skills</span>
+        <span data-open="contact">Contact</span>
+      </div>
+    </div>
+    <div class="menu-right">
+      <span>♡ 84%</span>
+      <span>🛜</span>
+      <span id="clock">00:00</span>
+    </div>
+  </div>
+
+  <div id="sticky">she writes, the internet ranks ✦ content + strategy + a little bit of pixel chaos</div>
+
+  <div id="icons"></div>
+
+  <div id="girl-wrap">
+    <div class="girl-speech" id="girlSpeech">hi! click an icon ✦</div>
+    <div id="girl-sprite"></div>
+  </div>
+
+  <div id="trash">
+    <div class="icon-glyph">🗑️</div>
+    <div class="icon-label">Rejected<br/>Concepts</div>
+  </div>
+
+  <div id="dock"></div>
+
+  <div id="windows-layer"></div>
+
+</div>
+
+<script>
+/* ============================================================
+   AUDIO — tiny 8-bit beeps via WebAudio (no files needed)
+============================================================ */
+let actx;
+function ac(){ if(!actx){ actx = new (window.AudioContext||window.webkitAudioContext)(); } return actx; }
+function beep(freq, dur, type, vol){
+  try{
+    const ctx = ac();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = type || 'square';
+    osc.frequency.value = freq;
+    gain.gain.value = (vol||0.06);
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.start();
+    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + dur);
+    osc.stop(ctx.currentTime + dur);
+  }catch(e){}
+}
+function sfxOpen(){ beep(520,.07,'square'); setTimeout(()=>beep(780,.08,'square'),60); }
+function sfxClose(){ beep(420,.07,'square'); setTimeout(()=>beep(260,.09,'square'),50); }
+function sfxClick(){ beep(680,.04,'square',0.05); }
+
+/* ============================================================
+   BOOT SEQUENCE
+============================================================ */
+const bootPct = document.getElementById('bootPct');
+let pct = 0;
+const bootInterval = setInterval(()=>{
+  pct += Math.ceil(Math.random()*14)+4;
+  if(pct>=100){ pct=100; clearInterval(bootInterval); }
+  bootPct.textContent = 'loading assets ' + pct + '%';
+}, 220);
+window.addEventListener('load', ()=>{
+  setTimeout(()=>{
+    document.getElementById('boot').classList.add('hide');
+    beep(660,.08,'square'); setTimeout(()=>beep(990,.12,'square'),90);
+  }, 2700);
+});
+
+/* ============================================================
+   CLOCK
+============================================================ */
+function tickClock(){
+  const d = new Date();
+  let h = d.getHours(); const m = d.getMinutes();
+  const ap = h>=12?'PM':'AM';
+  h = h%12; if(h===0) h=12;
+  document.getElementById('clock').textContent =
+    String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+' '+ap;
+}
+tickClock(); setInterval(tickClock, 1000*30);
+
+/* ============================================================
+   ICON + WINDOW DATA
+============================================================ */
+const ICONS = [
+  {id:'about',      glyph:'🪞', label:'About Me'},
+  {id:'travelwings', glyph:'✈️', label:'Travelwings'},
+  {id:'tatacliq',    glyph:'👗', label:'Tata CLiQ'},
+  {id:'zepto',       glyph:'🛍️', label:'Zepto'},
+  {id:'radius',      glyph:'🛰️', label:'Radius'},
+  {id:'vogue',       glyph:'📸', label:'Vogue India'},
+  {id:'freelance',   glyph:'🖋️', label:'Freelance'},
+  {id:'skills',      glyph:'🧰', label:'Skills'},
+  {id:'resume',      glyph:'📄', label:'Resume.pdf'},
+  {id:'contact',     glyph:'✉️', label:'Contact'},
+];
+
+const DOCK = ['about','travelwings','tatacliq','zepto','radius','vogue','skills','contact'];
+
+function shot(src, cap){
+  return '<div class="shot"><img src="./assets/'+src+'" alt="'+cap+'" loading="lazy"/><div class="shot-cap">'+cap+'</div></div>';
+}
+
+const WIN = {
+  about: {
+    title: 'About Me.app',
+    icon: '🪞',
+    w: 420,
+    body: `
+      <div class="shot" style="max-width:160px;margin:0 auto 16px;">
+        <img src="./assets/siya-photo.jpg" alt="Siya Gupta"/>
+      </div>
+      <h2>Hi, I'm Siya ✦</h2>
+      <p>A content writer and digital marketing specialist who's worked across travel, luxury fashion, FMCG and editorial worlds — turning research, search data and a love of storytelling into content that actually performs.</p>
+      <p>I write for the in-between: where a brand's voice meets what people are actually typing into Google. Editorial sensibility, SEO instincts, and a soft spot for Gen-Z and millennial audiences.</p>
+      <h3>Currently</h3>
+      <p>Content Analyst at Travelwings UAE, writing SEO-led travel & lifestyle content across six international markets.</p>
+      <div class="tagrow">
+        <span class="win-tag">Travel</span><span class="win-tag">Fashion</span><span class="win-tag">Luxury</span>
+        <span class="win-tag">Beauty</span><span class="win-tag">Lifestyle</span><span class="win-tag">Editorial</span>
+        <span class="win-tag">FMCG</span><span class="win-tag">D2C</span><span class="win-tag">E-commerce</span>
+      </div>
+    `
+  },
+
+  travelwings: {
+    title: 'Travelwings — Case Study',
+    icon: '✈️',
+    w: 560,
+    body: `
+      <h2>SEO & AEO impact across international travel markets</h2>
+      <p>Created and optimised 200+ destination pages, cruise pages, holiday package pages and campaign pages — plus meta titles, meta descriptions and email marketing — across UAE, South Africa, Kenya, Nigeria, Ghana and Morocco.</p>
+      <div class="tagrow">
+        <span class="win-tag">SEO Content</span><span class="win-tag">Keyword Research</span>
+        <span class="win-tag">AEO</span><span class="win-tag">Landing Pages</span>
+        <span class="win-tag">Email Campaigns</span><span class="win-tag">Search Intent</span>
+      </div>
+      <div class="stat-row">
+        <div class="stat-box"><div class="stat-num">200+</div><div class="stat-lbl">PAGES BUILT</div></div>
+        <div class="stat-box"><div class="stat-num">6</div><div class="stat-lbl">MARKETS</div></div>
+        <div class="stat-box"><div class="stat-num">AI✓</div><div class="stat-lbl">OVERVIEW HIT</div></div>
+      </div>
+      <h3>Selected work</h3>
+      <div class="shotgrid">
+        ${shot('travelwings-summer-content.jpg','Content Strategy Framework')}
+        ${shot('travelwings-armenia-ai.jpg','Armenia — AI Overview')}
+        ${shot('travelwings-eid-ranking.jpg','Eid Campaign — SERP Rank')}
+        ${shot('travelwings-summer-banner.jpg','Summer Campaign Banner')}
+        ${shot('travelwings-disney-ai.jpg','Disney — AI Overview')}
+        ${shot('travelwings-summer-ai.jpg','Summer — AI Overview')}
+      </div>
+    `
+  },
+
+  tatacliq: {
+    title: 'Tata CLiQ Luxury — Case Study',
+    icon: '👗',
+    w: 560,
+    body: `
+      <h2>Luxury fashion storytelling</h2>
+      <p>Crafted editorial content, campaign concepts and luxury copywriting for India's premier luxury fashion e-commerce platform — hero banners, homepage narratives, push notifications, trend forecasts and campaign ideation.</p>
+      <div class="tagrow">
+        <span class="win-tag">Luxury Copywriting</span><span class="win-tag">Fashion Storytelling</span>
+        <span class="win-tag">Campaign Ideation</span><span class="win-tag">Trend Research</span>
+      </div>
+      <h3>Where luxury finds its voice</h3>
+      <p>Hero banner concepts and homepage storytelling positioning Tata CLiQ Luxury as India's destination for premium fashion — balancing aspiration with accessibility.</p>
+      <div class="shotgrid">
+        ${shot('tata-cliq-banner-copy.jpg','Hero Banner Concepts')}
+        ${shot('tata-cliq-homepage.jpg','Homepage Storytelling')}
+        ${shot('tata-cliq-push.jpg','Push Notifications')}
+        ${shot('tata-cliq-campaign.jpg','Campaign Concepts')}
+        ${shot('tata-cliq-editorial.jpg','Editorial Development')}
+        ${shot('tata-cliq-tailoring.jpg','Tailoring & Style')}
+        ${shot('tata-cliq-smokey-eye.jpg','Beauty Trend Forecast')}
+      </div>
+    `
+  },
+
+  zepto: {
+    title: 'Zepto — Case Study',
+    icon: '🛍️',
+    w: 560,
+    body: `
+      <h2>95+ approved articles, delivered in under 30 days</h2>
+      <p>Product content across skincare, electronics, FMCG, beauty, wellness, home decor, pet care and lifestyle categories — high-volume speed without compromising SEO quality or brand voice.</p>
+      <div class="stat-row">
+        <div class="stat-box"><div class="stat-num">95+</div><div class="stat-lbl">ARTICLES</div></div>
+        <div class="stat-box"><div class="stat-num">30</div><div class="stat-lbl">DAY WINDOW</div></div>
+        <div class="stat-box"><div class="stat-num">AI</div><div class="stat-lbl">OVERVIEW</div></div>
+      </div>
+      <div class="shotgrid">
+        ${shot('zepto-product-page.jpg','Product Page — Live')}
+        ${shot('zepto-approval-sheet.jpg','Approval Tracker')}
+        ${shot('zepto-coffee-maker-ai.jpg','AI Overview Achieved')}
+        ${shot('zepto-coffee-category.jpg','Category Optimisation')}
+        ${shot('zepto-mac-content.jpg','Beauty & Electronics')}
+      </div>
+    `
+  },
+
+  radius: {
+    title: 'Radius — Case Study',
+    icon: '🛰️',
+    w: 560,
+    body: `
+      <h2>Enterprise technology & energy content</h2>
+      <p>Thought leadership content covering IoT, Smart Metering, Energy Management, Utilities, EV Infrastructure and Smart Cities — translating complex enterprise technology into strategic editorial.</p>
+      <div class="shotgrid">
+        ${shot('radius-blog-grid.jpg','Blog Portfolio')}
+        ${shot('radius-smart-meter-blog.jpg','Smart Metering & Utilities')}
+        ${shot('radius-client-ecosystem.jpg','EV Infra & Smart Cities')}
+      </div>
+    `
+  },
+
+  vogue: {
+    title: 'Vogue India — Case Study',
+    icon: '📸',
+    w: 460,
+    body: `
+      <h2>Editorial research & trend analysis</h2>
+      <p>Contributing editorial research and trend analysis for Vogue India — where data meets desire and cultural intelligence shapes the next fashion narrative.</p>
+      <div class="shot" style="padding:16px;background:var(--lavender);">
+        <p style="font-style:italic;">"Fashion is never just aesthetic — it's a data story waiting to be read through search behaviour, cultural signals and the spaces between what people want and what they type."</p>
+        <p style="font-size:7px;color:var(--ink-soft);margin-top:8px;">— Editorial Research Approach</p>
+      </div>
+      <div class="shot" style="padding:16px;background:var(--lavender);">
+        <p style="font-style:italic;">"The most powerful trend forecasts are built on the convergence of search intent, social velocity, and the quiet desires audiences express through what they look for."</p>
+        <p style="font-size:7px;color:var(--ink-soft);margin-top:8px;">— Trend Analysis Methodology</p>
+      </div>
+    `
+  },
+
+  freelance: {
+    title: 'Freelance Work',
+    icon: '🖋️',
+    w: 460,
+    body: `
+      <h2>Independent writing, since July 2023</h2>
+      <p>Articles on fashion, lifestyle, sustainability, identity and pop culture — editorial pieces, trend features and digital articles, adapted to each platform's voice.</p>
+      <div class="exp-item">
+        <div class="exp-role">Femision · Tripzilla India</div>
+        <div class="exp-meta">LIFESTYLE & TRAVEL</div>
+      </div>
+      <div class="exp-item">
+        <div class="exp-role">Wedzy Life</div>
+        <div class="exp-meta">WEDDINGS & CELEBRATION CONTENT</div>
+      </div>
+      <div class="exp-item">
+        <div class="exp-role">InAmigos Foundation</div>
+        <div class="exp-meta">NONPROFIT STORYTELLING</div>
+      </div>
+      <h3>Top performer</h3>
+      <p>"How to Travel Light & Still Slay Every Insta Reel" — 7.5K+ views. Plus the Green Escapes sustainability series, focused on conscious tourism.</p>
+    `
+  },
+
+  skills: {
+    title: 'Skills.app',
+    icon: '🧰',
+    w: 460,
+    body: `
+      <div class="skill-cat">
+        <h3>Core Content Skills</h3>
+        <ul class="skill-list">
+          <li>Long-form & short-form writing</li>
+          <li>Editorial & lifestyle writing</li>
+          <li>SEO-optimised articles & blogs</li>
+          <li>Product & e-commerce copywriting</li>
+          <li>UX writing & app microcopy</li>
+          <li>Campaign & launch copy</li>
+          <li>Social captions & reel scripts</li>
+        </ul>
+      </div>
+      <div class="skill-cat">
+        <h3>Tools & Tech</h3>
+        <ul class="skill-list">
+          <li>WordPress (CMS publishing)</li>
+          <li>SEMrush, Google Trends</li>
+          <li>Notion, Trello</li>
+          <li>Canva</li>
+        </ul>
+      </div>
+      <div class="skill-cat">
+        <h3>Languages</h3>
+        <ul class="skill-list">
+          <li>English — Native</li>
+          <li>Hindi — Native</li>
+          <li>French — Advanced</li>
+        </ul>
+      </div>
+    `
+  },
+
+  resume: {
+    title: 'Resume.pdf',
+    icon: '📄',
+    w: 480,
+    body: `
+      <h2>Experience timeline</h2>
+      <div class="exp-item">
+        <div class="exp-role">Content Analyst — Travelwings, UAE</div>
+        <div class="exp-meta">APRIL 2025 – PRESENT</div>
+        <p>SEO-informed travel, lifestyle & fashion content for UAE and Indian audiences; destination pages, blogs and campaign assets.</p>
+      </div>
+      <div class="exp-item">
+        <div class="exp-role">Product & Brand Intern — 1702 Digital × Zepto</div>
+        <div class="exp-meta">2025</div>
+        <p>Copy for app-facing features and consumer communication; product storytelling in a fast-paced consumer tech environment.</p>
+      </div>
+      <div class="exp-item">
+        <div class="exp-role">Fashion Content Assistant — Tata CLiQ Luxury</div>
+        <div class="exp-meta">OCT 2024 – JAN 2025</div>
+        <p>Product descriptions for luxury fashion & accessory brands; seasonal launch content and homepage copy.</p>
+      </div>
+      <div class="exp-item">
+        <div class="exp-role">Styling & Editorial Intern — Vogue India</div>
+        <div class="exp-meta">FEB 2025 – APR 2025</div>
+        <p>Research, captions & supporting copy for editorial teams; trend research for storytelling.</p>
+      </div>
+      <div class="exp-item">
+        <div class="exp-role">Content Curator — Radius.co</div>
+        <div class="exp-meta">AUG 2024 – DEC 2024</div>
+        <p>Short-form content for reels, carousels & destination posts; Gen-Z focused travel campaigns.</p>
+      </div>
+      <h3>Education</h3>
+      <p>B.Sc. (Hons) Zoology, Minor in English Literature — Delhi University, expected 2026.<br/>Fashion Branding & Styling (Coursework) — Delhi University, 2024–2025.</p>
+      <a class="btn-pixel" href="./assets/Siya-Gupta-CV.pdf" target="_blank" rel="noopener">↓ Download Full CV</a>
+    `
+  },
+
+  contact: {
+    title: 'Contact.app',
+    icon: '✉️',
+    w: 400,
+    body: `
+      <h2>Let's create something ✦</h2>
+      <p>Open to new projects and collaborations — content strategy, SEO scaling, or luxury editorial work.</p>
+      <div class="contact-row"><span class="lbl">Email</span> siyaguptaa26@gmail.com</div>
+      <div class="contact-row"><span class="lbl">Phone</span> +91 6005923320</div>
+      <div class="contact-row"><span class="lbl">Based</span> New Delhi, India</div>
+      <a class="btn-pixel" href="mailto:siyaguptaa26@gmail.com">✉ Start a Conversation</a>
+    `
+  },
+
+  trash: {
+    title: 'Rejected Concepts',
+    icon: '🗑️',
+    w: 440,
+    body: `
+      <h2>Concepts that didn't make the cut</h2>
+      <p>Every portfolio has a graveyard. Here's mine:</p>
+      <div class="exp-item"><div class="exp-role">v1 — Comic Sans Everywhere Edition</div><p>Rejected by everyone, including Comic Sans.</p></div>
+      <div class="exp-item"><div class="exp-role">v2 — Portfolio, but it's a PowerPoint with transitions</div><p>87 slides. All of them spinning. Nobody survived the demo.</p></div>
+      <div class="exp-item"><div class="exp-role">v3 — Glitter cursor trail</div><p>Technically beautiful. Also technically a seizure risk.</p></div>
+      <div class="exp-item"><div class="exp-role">v4 — Auto-playing background music: panflute</div><p>Closed 9 browser tabs trying to find the mute button.</p></div>
+      <div class="exp-item"><div class="exp-role">v5 — Resume that talks when you scroll</div><p>"WELCOME... TO MY... CAREER..." in a robot voice. Discontinued.</p></div>
+      <p style="margin-top:14px;font-size:8px;color:var(--ink-soft);">you weren't meant to find this. but here we are. ✦</p>
+    `
+  }
+};
+
+/* ============================================================
+   RENDER ICONS + DOCK
+============================================================ */
+const iconsLayer = document.getElementById('icons');
+ICONS.forEach(ic=>{
+  const el = document.createElement('div');
+  el.className = 'icon';
+  el.dataset.win = ic.id;
+  el.innerHTML = '<div class="icon-glyph">'+ic.glyph+'</div><div class="icon-label">'+ic.label+'</div>';
+  el.addEventListener('click', ()=>{ sfxClick(); openWindow(ic.id); });
+  iconsLayer.appendChild(el);
+});
+
+const dockLayer = document.getElementById('dock');
+DOCK.forEach(id=>{
+  const data = WIN[id];
+  const el = document.createElement('div');
+  el.className = 'dock-item';
+  el.title = data.title;
+  el.textContent = data.icon;
+  el.addEventListener('click', ()=>{ sfxClick(); openWindow(id); });
+  dockLayer.appendChild(el);
+});
+
+document.getElementById('trash').addEventListener('click', ()=>{ sfxClick(); openWindow('trash'); });
+
+/* ============================================================
+   WINDOW MANAGER
+============================================================ */
+const layer = document.getElementById('windows-layer');
+let zCounter = 100;
+const openWindows = {};
+let cascade = 0;
+
+function openWindow(id){
+  if(openWindows[id]){
+    focusWindow(openWindows[id]);
+    return;
+  }
+  const data = WIN[id];
+  const win = document.createElement('div');
+  win.className = 'window';
+  win.style.width = (data.w||460)+'px';
+  const baseLeft = Math.min(160 + (cascade%6)*30, window.innerWidth - (data.w||460) - 30);
+  const baseTop = Math.min(70 + (cascade%6)*26, window.innerHeight - 240);
+  win.style.left = Math.max(20,baseLeft) + 'px';
+  win.style.top = Math.max(50,baseTop) + 'px';
+  cascade++;
+
+  win.innerHTML = `
+    <div class="titlebar">
+      <div class="tl-btn tl-red" data-act="close"></div>
+      <div class="tl-btn tl-yellow" data-act="min"></div>
+      <div class="tl-btn tl-green" data-act="max"></div>
+      <div class="titlebar-title">${data.icon} ${data.title}</div>
+    </div>
+    <div class="window-body">${data.body}</div>
+  `;
+  layer.appendChild(win);
+  openWindows[id] = win;
+  focusWindow(win);
+  sfxOpen();
+
+  // traffic light buttons
+  win.querySelector('[data-act="close"]').addEventListener('click', (e)=>{ e.stopPropagation(); closeWindow(id); });
+  win.querySelector('[data-act="min"]').addEventListener('click', (e)=>{ e.stopPropagation(); win.style.display='none'; sfxClick(); });
+  win.querySelector('[data-act="max"]').addEventListener('click', (e)=>{ e.stopPropagation(); win.classList.toggle('maximized'); sfxClick(); });
+
+  // focus + drag
+  win.addEventListener('mousedown', ()=>focusWindow(win));
+  win.addEventListener('touchstart', ()=>focusWindow(win));
+  makeDraggable(win, win.querySelector('.titlebar'));
+}
+
+function closeWindow(id){
+  const win = openWindows[id];
+  if(!win) return;
+  win.classList.add('closing');
+  sfxClose();
+  setTimeout(()=>{ win.remove(); delete openWindows[id]; }, 160);
+}
+
+function focusWindow(win){
+  zCounter++;
+  win.style.zIndex = zCounter;
+  if(win.style.display==='none') win.style.display='flex';
+}
+
+function makeDraggable(win, handle){
+  let dragging=false, sx=0, sy=0, ox=0, oy=0;
+  function start(e){
+    if(win.classList.contains('maximized')) return;
+    dragging=true;
+    const pt = e.touches?e.touches[0]:e;
+    sx=pt.clientX; sy=pt.clientY;
+    const rect = win.getBoundingClientRect();
+    ox=rect.left; oy=rect.top;
+    focusWindow(win);
+    document.addEventListener('mousemove', move);
+    document.addEventListener('mouseup', stop);
+    document.addEventListener('touchmove', move, {passive:false});
+    document.addEventListener('touchend', stop);
+  }
+  function move(e){
+    if(!dragging) return;
+    if(e.touches) e.preventDefault();
+    const pt = e.touches?e.touches[0]:e;
+    const dx = pt.clientX - sx, dy = pt.clientY - sy;
+    let nl = ox+dx, nt = Math.max(40, oy+dy);
+    win.style.left = nl+'px';
+    win.style.top = nt+'px';
+  }
+  function stop(){
+    dragging=false;
+    document.removeEventListener('mousemove', move);
+    document.removeEventListener('mouseup', stop);
+    document.removeEventListener('touchmove', move);
+    document.removeEventListener('touchend', stop);
+  }
+  handle.addEventListener('mousedown', start);
+  handle.addEventListener('touchstart', start, {passive:true});
+}
+
+/* open About by default after boot, like a welcome window */
+setTimeout(()=>{ openWindow('about'); }, 3200);
+</script>
+
+</body>
+</html>
